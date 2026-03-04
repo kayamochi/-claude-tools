@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>かやちゃんのルーティン表</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f0e17;
+    --card: #1a1826;
+    --card2: #221f33;
+    --accent1: #ff6b9d;
+    --accent2: #c77dff;
+    --accent3: #72efdd;
+    --accent4: #ffd166;
+    --accent5: #ff9a3c;
+    --text: #fffffe;
+    --muted: #a7a3c2;
+    --border: rgba(255,255,255,0.07);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Zen Maru Gothic', sans-serif;
+    min-height: 100vh;
+    padding: 32px 20px 60px;
+    background-image: 
+      radial-gradient(ellipse at 20% 10%, rgba(199,125,255,0.12) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(255,107,157,0.1) 0%, transparent 50%);
+  }
+
+  h1 {
+    font-size: clamp(1.4rem, 4vw, 2rem);
+    font-weight: 900;
+    text-align: center;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, var(--accent2), var(--accent1));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.02em;
+  }
+
+  .subtitle {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.8rem;
+    margin-bottom: 36px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+
+  .tab {
+    padding: 8px 20px;
+    border-radius: 999px;
+    border: 1.5px solid var(--border);
+    background: var(--card);
+    color: var(--muted);
+    cursor: pointer;
+    font-family: 'Zen Maru Gothic', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    transition: all 0.2s;
+  }
+
+  .tab.active {
+    background: linear-gradient(135deg, var(--accent2), var(--accent1));
+    border-color: transparent;
+    color: white;
+  }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .timeline {
+    max-width: 560px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .block {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    animation: fadeUp 0.4s ease both;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .block::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    border-radius: 3px 0 0 3px;
+  }
+
+  .block.sleep::before { background: var(--accent2); }
+  .block.morning::before { background: var(--accent4); }
+  .block.commute::before { background: var(--accent3); }
+  .block.work::before { background: var(--muted); }
+  .block.evening::before { background: var(--accent5); }
+  .block.bath::before { background: var(--accent1); }
+  .block.game::before { background: var(--accent2); }
+  .block.night::before { background: #6b7aff; }
+  .block.off::before { background: var(--accent3); }
+  .block.rest::before { background: var(--muted); }
+
+  .block-time {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--muted);
+    min-width: 70px;
+    padding-top: 2px;
+    line-height: 1.4;
+  }
+
+  .block-content { flex: 1; }
+
+  .block-title {
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .block-emoji { font-size: 1rem; }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 6px;
+  }
+
+  .tag {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-weight: 500;
+  }
+
+  .tag.habit { background: rgba(255,107,157,0.15); color: var(--accent1); }
+  .tag.study { background: rgba(114,239,221,0.15); color: var(--accent3); }
+  .tag.health { background: rgba(255,209,102,0.15); color: var(--accent4); }
+  .tag.work { background: rgba(167,163,194,0.2); color: var(--muted); }
+  .tag.free { background: rgba(199,125,255,0.15); color: var(--accent2); }
+  .tag.must { background: rgba(255,107,157,0.25); color: var(--accent1); border: 1px solid rgba(255,107,157,0.3); }
+
+  .block-note {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 16px 0 6px 4px;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    padding: 1px 7px;
+    border-radius: 999px;
+    background: rgba(255,154,60,0.2);
+    color: var(--accent5);
+    border: 1px solid rgba(255,154,60,0.3);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .tips-box {
+    max-width: 560px;
+    margin: 24px auto 0;
+    padding: 16px 18px;
+    background: var(--card2);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+  }
+
+  .tips-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--accent3);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .tips-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .tips-list li {
+    font-size: 0.78rem;
+    color: var(--muted);
+    padding-left: 16px;
+    position: relative;
+    line-height: 1.5;
+  }
+
+  .tips-list li::before {
+    content: '›';
+    position: absolute;
+    left: 4px;
+    color: var(--accent3);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .divider {
+    max-width: 560px;
+    margin: 6px auto;
+    border: none;
+    border-top: 1px dashed var(--border);
+  }
+</style>
+</head>
+<body>
+
+<h1>✦ かやちゃんのルーティン表</h1>
+<p class="subtitle">// daily_routine_v1 · 継続できる仕組みを作る</p>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('weekday')">📅 平日（副業なし）</button>
+  <button class="tab" onclick="switchTab('workday')">🍢 平日（副業あり）</button>
+  <button class="tab" onclick="switchTab('holiday')">🌸 休日</button>
+</div>
+
+<!-- 平日（副業なし） -->
+<div class="panel active" id="weekday">
+  <div class="timeline">
+
+    <div class="section-label">🌅 朝</div>
+
+    <div class="block morning" style="animation-delay:0.05s">
+      <div class="block-time">07:00</div>
+      <div class="block-content">
+        <div class="block-title"><span class="block-emoji">⏰</span> 起床</div>
+        <div class="tags">
+          <span class="tag must">MUST</span>
+          <span class="tag health">サプリ飲む</span>
+        </div>
+        <div class="block-note">起きたらすぐサプリ。水と一緒に飲むだけ！</div>
+      </div>
+    </div>
+
+    <div class="block commute" style="animation-delay:0.1s">
+      <div class="block-time">08:20<br>→09:00</div>
+      <div class="block-content">
+        <div class="block-title"><span class="block-emoji">🚃</span> 通勤 <span class="badge">毎日SPI</span></div>
+        <div class="tags">
+          <span class="tag study">SPI・テスト対策</span>
+        </div>
+        <div class="block-note">往復1時間。アプリ or テキスト1テーマだけ。書く系はNG（座れない時もあるし）。</div>
+      </div>
+    </div>
+
+    <div class="section-label">💼 仕事</div>
+
+    <div class="block work" style="animation-delay:0.15s">
+      <div class="block-time">09:00<br>→18:30</div>
+      <div class="block-content">
+        <div class="block-title"><span class="block-emoji">💼</span> 仕事</div>
+        <div class="tags">
+          <span class="tag work">業務タスク</span>
+        </div>
+        <div class="block-note">退勤時に退勤時間をメモ📝（習慣にする）</div>
+      </div>
+    </div>
+
+    <div class="section-label">🏠 帰宅後</div>
+
+    <div class="block evening" style="animation-delay:0.2s">
+      <div class="block-time">19:00<br>→21:00</div>
+      <div class="block-content">
+        <div class="block-title"><span class="block-emoji">🍳</span> ご飯・洗濯・風呂</div>
+        <div class="tags">
+          <span class="tag must">MUST</span>
+          <span class="tag health">夜風呂</span>
+        </div>
+        <div class="block-note">風呂後セットをここで完結させる👇</div>
+      </div>
+    </div>
+
+    <div class="block bath" style="animation-delay:0.25s">
+      <div class="block-time">風呂後</div>
+      <div class="block-content">
+        <div class="block-title"><span class="block-emoji">✨</span> 風呂後ルーティン</div>
+        <div class="tags">
+          <span class="tag habit">スキンケア</span>
+          <span class="tag habit">光脱毛</span>
+          <span class="tag health">あすけん記録</span>
+        </div>
+        <div class="block-note">セットでやる！順番を固定すると楽になる。</div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="block game" style="animation-delay:0.3s">
+      <div class="block-time">21:00<br>→24:00</div>
+      <div class="block-content">
+        <div class="block-title"><span class="block-emoji">🎮</span> ゲーム or 就活タイム</div>
+        <div class="tags">
+          <span class="tag free">スプラ大会・練習</span>
+          <span class="tag study">就活デー（週2〜3）</span>
+        </div>
+        <div class="block-note">チーム練習がない日を「就活デー」に。職務経歴書・面接対策など書く系はここ。</div>
+      </div>
+    </div>
+
+    <div class="block" style="animation-delay:0.32s; background: var(--card2); border-left: 3px solid var(--accent3);">
+      <div class="block-time">就活デー<br>の内訳</div>
+      <div class="block-content">
+        <div class="block-title"><span class="block-emoji">📝</span> 就活タイム（2〜3時間）</div>
+        <div class="tags">
+          <span class="tag study">職務経歴書・履歴書</span>
+          <span class="tag study">面接対策・自己PR</span>
+          <span class="tag study">求人リサーチ</span>
+        </div>
+        <div class="block-note">週のうちスプラ予定がない日に充てる。無理に毎日やらない。</div>
+      </div>
+    </div>
+
+    <div class="block night" style="animation-delay:0.35s">
+      <div class="block-time">24:00<br>→25:00</div>
+      <div class="block-content">
+        <div class="block-title"><span class="block-emoji">🌙</span> クールダウン・就寝前</div>
+        <div class="tags">
+          <span class="tag free">アニメ（週3）</span>
+          <span class="tag habit">家計簿</span>
+        </div>
+        <div class="block-note">家計簿はここで1分だけ。使った分だけ入れるだけでOK。</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="tips-box">
+    <div class="tips-title">💡 平日をうまく回すコツ</div>
+    <ul class="tips-list">
+      <li>通勤中はSPIのみ。書く系（職務経歴書など）は座れる環境でやる</li>
+      <li>「就活デー」はスプラのチーム練習がない日に設定する</li>
+      <li>風呂後ルーティンは順番固定で「考えずにできる」状態にする</li>
+      <li>家計簿は寝る前1分、その日使ったものだけ入れる</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 平日（副業あり） -->
+<div class="panel" id="workday">
+  <div class="timeline">
+
+    <div class="section-label">🌅 朝〜仕事</div>
+
+    <div class="block morning" style="animation-delay:0.05s">
+      <div class="block-time">07:00</div>
+      <div class="block-content">
+        <div class="block-title"><span class="block-emoji">⏰</span> 起床</div>
+        <div class="tags">
+          <span class="tag health">サプリ飲む</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="block commute" style="animation-delay:0.1s">
+      <div class="block-time">08:20<br>→09:00</div>
+      <div class="block-content">
+        <div class="block-title"><span class="block-emoji">🚃</span> 通勤</div>
+        <div class="tags">
+          <span class="tag study">SPI（余裕あれば）</span>
+        </div>
+        <div class="block-note">副業ある日は無理しない。ぼーっとしててもOK。</div>
+      </div>
+    </div>
+
+    <div class="block work" style="animation-delay:0.15s">
+      <div class="block-time">09:00<br>→17:00</div>
+      <div class="block-content">
+        <div class="block-title"><span class="block-emoji">💼</span> 仕事</div>
+      </div>
+    </div>
+
+    <div class="section-label">🍢 副業</div>
+
+    <div class="block evening" style="animation-delay:0.2s">
+      <div class="block-time">17:00<br>→24:00</div>
+      <div class="block-content">
+        <div class="block-title"><span class="block-emoji">🍢</span> 焼き鳥屋</div>
+        <div class="tags">
+          <span class="tag work">副業</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label">🌙 帰宅後</div>
+
+    <div class="block night" style="animation-delay:0.25s">
+      <div class="block-time">24:00<br>→25:00</div>
+      <div class="block-content">
+        <div class="block-title"><span class="block-emoji">🛁</span> 帰宅・風呂・就寝</div>
+        <div class="tags">
+          <span class="tag must">MUST</span>
+          <span class="tag health">夜風呂</span>
+          <span class="tag habit">スキンケアだけ</span>
+        </div>
+        <div class="block-note">脱毛は疲れてたらスキップOK。スキンケアだけでも◎</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="tips-box">
+    <div class="tips-title">💡 副業ありの日のコツ</div>
+    <ul class="tips-list">
+      <li>この日に習慣を詰め込もうとしない、生きて帰ればOK</li>
+      <li>サプリだけ忘れずに。朝起きたら即飲む</li>
+      <li>スキンケアは疲れてても1分でできる最低限でOK</li>
+      <li>家計簿・あすけんは翌日まとめてでもいい</li>
+    </ul>
+  </div>
+</div>
+
+<!-- 休日 -->
+<div class="panel" id="holiday">
+  <div class="timeline">
+
+    <div class="section-label">🌅 午前</div>
+
+    <div class="block morning" style="animation-delay:0.05s">
+      <div class="block-time">09:00<br>〜12:00</div>
+      <div class="block-content">
+        <div class="block-title"><span class="block-emoji">☀️</span> 起床（まちまちOK）</div>
+        <div class="tags">
+          <span class="tag health">サプリ飲む</span>
+          <span class="tag must">起きたら即サプリ</span>
+        </div>
+        <div class="block-note">何時に起きても、まずサプリ。これだけ固定。</div>
+      </div>
+    </div>
+
+    <div class="section-label">📅 その日のパターンで分岐</div>
+
+    <div class="block off" style="animation-delay:0.1s">
+      <div class="block-time">フル休日</div>
+      <div class="block-content">
+        <div class="block-title"><span class="block-emoji">🧹</span> フルで空いてる日</div>
+        <div class="tags">
+          <span class="tag habit">部屋掃除</span>
+          <span class="tag habit">風呂掃除</span>
+          <span class="tag study">就活がっつりデー</span>
+          <span class="tag free">絵を描く</span>
+        </div>
+        <div class="block-note">午前：掃除 → 午後2〜3時間：就活（職務経歴書・面接対策） → 夜：自由！</div>
+      </div>
+    </div>
+
+    <div class="block game" style="animation-delay:0.15s">
+      <div class="block-time">遊び予定</div>
+      <div class="block-content">
+        <div class="block-title"><span class="block-emoji">🎮</span> お出かけ・スプラ・遊び</div>
+        <div class="tags">
+          <span class="tag free">全力で楽しむ</span>
+        </div>
+        <div class="block-note">この日に習慣を詰め込まない。風呂後ルーティンだけやる。</div>
+      </div>
+    </div>
+
+    <div class="block evening" style="animation-delay:0.2s">
+      <div class="block-time">副業あり<br>17〜24時</div>
+      <div class="block-content">
+        <div class="block-title"><span class="block-emoji">🍢</span> 焼き鳥屋シフト</div>
+        <div class="tags">
+          <span class="tag work">副業</span>
+        </div>
+        <div class="block-note">平日副業ありと同じ。帰宅後はスキンケアだけでOK。</div>
+      </div>
+    </div>
+
+    <div class="section-label">🛁 夜（共通）</div>
+
+    <div class="block bath" style="animation-delay:0.25s">
+      <div class="block-time">夜</div>
+      <div class="block-content">
+        <div class="block-title"><span class="block-emoji">✨</span> 風呂後ルーティン</div>
+        <div class="tags">
+          <span class="tag habit">スキンケア</span>
+          <span class="tag habit">光脱毛（余裕あれば）</span>
+          <span class="tag health">あすけん記録</span>
+          <span class="tag habit">家計簿1分</span>
+        </div>
+        <div class="block-note">休日も夜の風呂後セットだけは維持！</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="tips-box">
+    <div class="tips-title">💡 休日のコツ</div>
+    <ul class="tips-list">
+      <li>「何時に起きたか」より「起きたらサプリ」の方が大事</li>
+      <li>フルで空いてる日が一番の就活チャンス、午後2〜3時間だけ</li>
+      <li>遊ぶ日は全力で遊ぶ、風呂後ルーティンだけは死守する</li>
+      <li>絵を描く時間も大事な回復タイム、罪悪感ゼロで！</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+function switchTab(id) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+
+  // re-trigger animations
+  document.querySelectorAll('#' + id + ' .block').forEach((el, i) => {
+    el.style.animation = 'none';
+    el.offsetHeight;
+    el.style.animation = '';
+    el.style.animationDelay = (i * 0.05) + 's';
+  });
+}
+</script>
+</body>
+</html>
